@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="inercia_macros.xacro"/>
+
+<!--INDICAMOS EL MATERIAL Y COLOR DE LOS COMPONENTES-->
+    <material name="white">
+        <color rgba="1 1 1 1"/>
+    </material>
+
+    <material name="orange">
+        <color rgba="1 0.3 0.1 1"/>
+    </material>
+
+    <material name="blue">
+        <color rgba="0.2 0.2 1 1"/>
+    </material>
+
+    <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
+
+<!--SIEMPRE LA BASE DE TODO EL ROBOT DEBE LLAMARSE base_link-->
+<!--Un link es como el origen de todo, sera la referencia de todos los demas componentes-->
+<!--Como se ve no es un objeto solo es un link, como un origen-->
+    <link name="base_link">
+    </link>
+
+<!-- CHASIS-->
+<!-- el chasis sera una caja de 300mm(largo)>x300(ancho)x150(alto)-->
+<!-- se lo representa en el box con 0.3 0.3 0.15-->
+
+<!-- Para el resto de piezas el "link" vendria a ser la piez como tal, como un rectangulo o cilindro-->
+<!-- el "joint" es basicamente donde estara el origen de la pieza, su sistema de coordenadas-->
+<!-- El origen del joint osea de la pieza dependera de el origen de todo osea el base_link-->
+<!-- y el origen de el "link" osea la posicion de la pieza dependera ya de el origen del "joint"-->
+<!-- Ojo el origen que se vera en RVIZ sera el del joint xq es el importante, el del link es solo para posicionarlo dependiendo del "joint"-->
+
+<!-- al ponerle "fixed" se refiere al tipo de union que es osea sera "Rigido"-->
+<!-- El origen se cuenta desde el base_link al poner -0.1 0 0 se refiere a que el origen de el chasis estara justo detras del origen general -->
+<!-- ahora para entender todo el base_link se lo pinsa que este justo alineado en "y" con el eje de las ruedas por eso-->
+<!-- el base_link se lo piensa que este en la base de la caja del chasis y a 0.1 o 100mm delante de la parte trasera del chasis-->
+<!-- justo en medio de todo el chasis en "y", en base a esta suposicion el resto de componentes se movera para que coordine-->
+<!-- El origen del chasisi en este caso estara -0.1 en x atras osea 100mm atras, eso signofica que estara en l base del chasis y justo en la parte de atras-->
+<!-- en "y" tendra la misma posicion del base link osea en medio de todo-->
+    <joint name="chassin_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="-0.1 0 0"/>
+    </joint>
+
+<!-- ahora cuansdo se crea la caja por default se situara con el origen del chasis osea el ""chassis_joint junto en medio-->
+<!-- pero como vimos hace rato lo que se quiere es que este "chassis joint este en la parte trasera y ven la base de esta caja del chasis"-->
+<!-- y el base_link igual en la base pero a 0.1 de la parte trasera-->
+<!-- para eso movemos la caja, ojo que esto que moveremos es con respecto al "chassis_join" y no al base_link) -->
+<!-- movemos en "x" 0.15 adelante, para al "chassis_joint" dejarlo juto en la parte trasera del chasis-->
+<!-- en "z" movemos 0.075 arriba para dejar justo en la base al "chassis_joint"-->
+<!-- todo esto esat representado en el "origin" que se ve aqui abajo, es solo como se lo movera-->
+    <link name="chassis">
+        <visual>
+            <origin xyz="0.15 0 0.075"/>
+            <geometry>
+            <!-- tamaño de la caja 0.3=300mm, 0.15=150mm...-->
+                <box size="0.3 0.3 0.15"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+        <collision>
+            <origin xyz="0.15 0 0.075"/>
+            <geometry>
+            <!-- tamaño de la caja 0.3=300mm, 0.15=150mm...-->
+                <box size="0.3 0.3 0.15"/>
+            </geometry>
+            
+        </collision>
+
+        <xacro:inertial_box mass="0.5" x="0.3" y="0.3" z="0.15">
+            <origin xyz="0.15 0 0.075" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+<!-- Si se quiere entender con imagen hay una foto de como esta los origenes-->
+
+
+
+
+<!-- RUEDA IZQUIERDA-->
+<joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <!-- los cilindros por default estan apuntado arriba osea es como que el cilindo esta apoyyado en el piso  -->
+    <!-- es como que el eje z es el eje de rotacion del cilindro -->
+    <!-- para cambiar eso debemo rotarlo 90°=pi/2 con referencia el eje x para que la rieda se pare porfin-->
+    <!-- eso es lo que hace el ryp-->
+    <origin xyz="0 0.175 0" rpy="-${pi/2} 0 0"/>
+    <!-- ahora debemos asignar un eje de rotacion, para entender cuando nostros rotamos la rueda tambiebn lo hizo su sistema de coordenadas -->
+    <!-- eso hace que el eje z siga siendo su eje de rotacion-->
+    <!-- ahora si queremos que vaya adelante cuando giramos el cilindro en sentido de las agujas del reloj a lo largo del eje z ponemos "1" en z-->
+    <axis xyz="0 0 1"/>
+    <!-- es como indicarle que cuando lo giremos como el reloj el carro deberia ir adelante-->
+    <!-- para la otra rueda debera ser "-1" xq al giraralo en sentido de la gujas del reloj aya que su eje z mirara al lado opuesto por logica se moveria atras, entonces es -1-->
+</joint>
+
+
+
+<link name="left_wheel">
+    <visual>
+        <geometry>
+        <!-- tamaño de la rueda radio=0.05=50mm, grodos=0.04=40mm...-->
+            <cylinder radius="0.05" length="0.04"/>
+        </geometry>
+        <material name="blue"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder radius="0.05" length="0.04"/>
+        </geometry>
+    
+    </collision>
+
+    <xacro:inertial_cylinder mass="0.1" length="0.04" radius="0.05">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_cylinder>
+
+ </link>
+
+
+
+<!-- RUEDA DERECHA-->
+<joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.175 0" rpy="${pi/2} 0 0"/>
+    <axis xyz="0 0 -1"/>
+        <!-- para la otra rueda debera ser "-1" xq al giraralo en sentido de la gujas del reloj como su eje z mirara al lado opuesto por logica se moveria atras, entonces es -1-->
+        <!-- en resumen tomara el eje -z, para que gire adelante como la rueda izquierda-->
+</joint>
+
+
+<link name="right_wheel">
+    <visual>
+        <geometry>
+        <!-- tamaño de la rueda radio=0.05=50mm, grodos=0.04=40mm...-->
+            <cylinder radius="0.05" length="0.04"/>
+        </geometry>
+        <material name="blue"/>
+    </visual>
+
+    <collision>
+        <geometry>
+            <cylinder radius="0.05" length="0.04"/>
+        </geometry>
+        
+    </collision>
+
+    <xacro:inertial_cylinder mass="0.1" length="0.04" radius="0.05">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_cylinder>
+</link>   
+
+<!-- RUEDA LOCA O CASTER WHEEL-->
+<joint name="caster_wheel_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="caster_wheel"/>
+    <!-- como tomamos de referencia el origen del chasis que esta todo hacia atras-->
+    <!-- lo movemos hacia adelante 0.24, no 0.3 para que no se salga y este todo adelante-->
+    <origin xyz="0.24 0 0"/>
+</joint>
+
+<link name="caster_wheel">
+    <visual>
+        <geometry>
+            <sphere radius="0.05"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+
+    <collision>
+        <geometry>
+            <sphere radius="0.05"/>
+        </geometry>
+        
+    </collision>
+
+    <xacro:inertial_sphere mass="0.1" radius="0.05">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_sphere>
+</link>
+
+</robot>
