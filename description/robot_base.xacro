@@ -4,6 +4,7 @@
     <xacro:include filename="inercia_macros.xacro"/>
 
 <!--INDICAMOS EL MATERIAL Y COLOR DE LOS COMPONENTES-->
+
     <material name="white">
         <color rgba="1 1 1 1"/>
     </material>
