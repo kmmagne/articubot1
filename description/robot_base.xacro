@@ -25,6 +25,7 @@
 <!--Un link es como el origen de todo, sera la referencia de todos los demas componentes-->
 <!--Como se ve no es un objeto solo es un link, como un origen-->
     <link name="base_link">
+
     </link>
 
 <!-- CHASIS-->
@@ -80,6 +81,10 @@
         </xacro:inertial_box>
     </link>
 
+    <gazebo reference="chassis">
+            <material>Gazebo/White</material>
+    </gazebo>
+
 <!-- Si se quiere entender con imagen hay una foto de como esta los origenes-->
 
 
@@ -125,6 +130,9 @@
 
  </link>
 
+<gazebo reference="left_wheel">
+    <material>Gazebo/Blue</material>
+</gazebo>
 
 
 <!-- RUEDA DERECHA-->
@@ -159,6 +167,12 @@
     </xacro:inertial_cylinder>
 </link>   
 
+<gazebo reference="right_wheel">
+    <material>Gazebo/Blue</material>
+</gazebo>
+
+
+
 <!-- RUEDA LOCA O CASTER WHEEL-->
 <joint name="caster_wheel_joint" type="fixed">
     <parent link="chassis"/>
@@ -187,5 +201,12 @@
             <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:inertial_sphere>
 </link>
+
+<gazebo reference="caster_wheel">
+    <material>Gazebo/Black</material>
+    <mu1 value="0.001"/> 
+    <mu2 value="0.001"/> 
+</gazebo>
+
 
 </robot>
